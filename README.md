@@ -21,7 +21,7 @@
 ## 结果
 
 
-	mod=smf.ols('hit~t_content+diff+solve+id',data=dt)
+	mod=smf.ols('hit~t_content+diff+solve+id',data=df)
 	res=mod.fit()
 	print res.summary()
 
