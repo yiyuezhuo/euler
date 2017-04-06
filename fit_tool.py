@@ -5,6 +5,8 @@ Created on Mon Apr 04 21:05:25 2016
 @author: yiyuezhuo
 """
 
+from __future__ import print_function
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import leastsq
@@ -42,11 +44,11 @@ class Model(object):
         
 
 class ExponModel(Model):
-    params=('a','b','c')
-    formula='y=a*exp(b*x)+c'
+    params=('a','b','c','d')
+    formula='y=a*exp(b*(x+c))+d'
     def peval(self,x,p):
-        a,b,c=p
-        return a*np.exp(b*x)+c
+        a,b,c,d=p
+        return a*np.exp(b*(x+c))+d
         
 class LinearModel(Model):
     params=('k','b')
@@ -68,7 +70,7 @@ def check(key,message='check fail'):
             if getattr(self,key):
                 return method(self,*args,**kwargs)
             else:
-                print message
+                print(message)
         return __check
     return _check
 
@@ -84,14 +86,14 @@ class FitResult(object):
     @check('succ',message='fit fail')
     def summary(self):
         error2=self.error2()
-        print 'Curve Fit Model'
-        print '==================='
-        print self.model.__class__.formula
+        print('Curve Fit Model')
+        print('===================')
+        print(self.model.__class__.formula)
         #print ' '.join(itertools.chain(*zip(self.model.__class__.params,self.params)))
         keys=self.model.__class__.params
         values=map(str,self.params)
-        print ' '.join(itertools.chain(*zip(keys,values)))
-        print 'error2',error2
+        print(' '.join(itertools.chain(*zip(keys,values))))
+        print('error2',error2)
     @check('succ',message='fit fail')
     def plot(self):
         plt.plot(self.model.exog,self.model.endog)

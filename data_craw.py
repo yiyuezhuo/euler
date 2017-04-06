@@ -11,7 +11,10 @@ Created on Fri Feb 12 20:04:41 2016
 import requests
 import os
 #import time
-from bs4 import BeautifulSoup
+import bs4
+#from bs4 import BeautifulSoup
+def BeautifulSoup(obj):
+    return bs4.BeautifulSoup(obj, 'lxml')
 
 header_s='''Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
 Accept-Encoding:gzip, deflate, sdch
@@ -24,7 +27,7 @@ Upgrade-Insecure-Requests:1
 User-Agent:Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36'''
 headers={}
 for line in header_s.split('\n'):
-    print line
+    #print(line)
     index=line.index(':')
     key,value=line[:index],line[index:]
     headers[key]=value
@@ -34,7 +37,7 @@ cookies={'DYNSRV':'lin105','keep_alive':'863704%23PqEwAaQ5u2VobNlacNol3DBpcJf3Ii
 def projecteuler_archive_download(root='html/'):
     '''https://projecteuler.net/archives;page=2'''
     for i in range(1,12):
-        print 'downloading',i
+        print('downloading',i)
         url='https://projecteuler.net/archives;page='+str(i)
         #result=requests.get(url,headers=headers)
         result=requests.get(url,cookies=cookies)
@@ -46,7 +49,7 @@ def projecteuler_archive_download(root='html/'):
 def spirtzhang_download(root='html/'):
     '''http://pe.spiritzhang.com/index.php/2011-05-11-09-44-54?start=50'''
     for i in range(6):
-        print 'downloading',i
+        print('downloading',i)
         url='http://pe.spiritzhang.com/index.php/2011-05-11-09-44-54'
         params={'start':i*50}
         result=requests.get(url,params=params)
@@ -58,7 +61,7 @@ def spirtzhang_download(root='html/'):
 def projecteuler_problem_download(root='html/'):
     '''https://projecteuler.net/problem=536'''
     for i in range(1,537):
-        print 'downloading',i
+        print('downloading',i)
         url='https://projecteuler.net/problem='+str(i)
         result=requests.get(url)
         path=root+'projecteuler_problem_'+str(i)+'.html'
@@ -83,9 +86,9 @@ class Query(object):
         已经有那个文件则不会重新下载,一般应当进行重写'''
         return self.path_prefix+var+self.path_suffix
     def report_downloading(self,var):
-        print 'downloading',var
+        print('downloading',var)
     def report_exists(self,var):
-        print 'exists',var
+        print('exists',var)
     def do(self,over=False):
         for var in self.var_list:
             url=self.get_url(var)
@@ -102,13 +105,21 @@ class Query(object):
         该方法一般应该重写'''
         return requests.get(url)
     def save(self,r,path):
+        '''
         f=open(path,'w')
         f.write(r.content)
         f.close()
+        '''
+        with open(path, 'w', encoding='utf8') as f:
+            f.write(r.content)
     def load(self,path):
+        '''
         f=open(path,'r')
         s=f.read()
         f.close()
+        '''
+        with open(path, 'r', encoding='utf8') as f:
+            s = f.read()
         return s
     def load_var(self,var):
         return self.load(self.get_path(var))
@@ -117,12 +128,12 @@ class Query(object):
     def do_forever(self,itermax=10):
         for i in range(itermax):
             if self.is_clear():
-                print 'clear'
+                print('clear')
                 break
             try:
                 self.do()
-            except requests.ConnectionError,e:
-                print e
+            except requests.ConnectionError as e:
+                print(e)
     def to_obj(self,loads,var):
         '''将载入的loads转换成一个对象（列表/字典）,子类应当重写此方法'''
         return None

@@ -20,10 +20,10 @@ data_file_name='data.csv'
 
 import os
 if os.path.isfile(data_file_name):
-    print 'load {} from cache'.format(data_file_name)
+    print('load {} from cache'.format(data_file_name))
     df=pd.read_csv(data_file_name)
 else:
-    print 'cache is not existed try create it by data_craw.py script'
+    print('cache is not existed try create it by data_craw.py script')
     bl=integration()
     df=pd.DataFrame(bl)
     df.index=df['id']
@@ -43,8 +43,24 @@ t_content 中文翻译题目文本长度
 
 
 mod=smf.ols('hit~t_content+diff+solve+id+np.square(id)',data=df)
-res=mod.fit()
-print res.summary()
+res2=mod.fit()
+print(res2.summary())
+
+def to_latex(summary, width_scale=0.5, col_scale=0.5, 
+             print_only=True, center = True):
+    header = '\\scalebox{{{}}}[{}]{{'.format(width_scale,col_scale)
+    tail = '}'
+    latex_list = []
+    for table in summary.tables:
+        latex = table.as_latex_tabular(center=False).replace('_','\\_')
+        latex_list.append('\n'.join([header,latex,tail]))
+    latex = '\n'.join(latex_list)
+    if center:
+        latex = '\n'.join([r'\begin{center}', latex, r'\end{center}'])
+    if print_only:
+        print(latex)
+    else:
+        return latex
 
 '''
 这里考察难度（变化）对当期题目和下期题目的中文翻译查询量（变化）的影响，
@@ -61,7 +77,7 @@ def test(dt):
     ddt['id']=dt['id']
     mod=smf.ols('hit~diff',data=ddt)
     res=mod.fit()
-    print res.summary()
+    print(res.summary())
 '''
 def exp_fit(x,y,p0=(1.0,1.0,1.0)):
     #x,y, are vector formal y=a*exp(b*x)+c
@@ -73,7 +89,7 @@ def exp_fit(x,y,p0=(1.0,1.0,1.0)):
     plsq=leastsq(residuals,p0,args=(y,x))
     return plsq
 '''
-dfs=df.sort('solve',ascending=False)
+dfs=df.sort_values(by='solve',ascending=False)
 dfs.index=range(len(dfs.index))
 x=dfs.index.tolist()
 y=dfs['solve'].tolist()
