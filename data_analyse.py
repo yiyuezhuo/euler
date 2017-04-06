@@ -20,10 +20,10 @@ data_file_name='data.csv'
 
 import os
 if os.path.isfile(data_file_name):
-    print('load {} from cache'.format(data_file_name))
+    print('Load {} from cache'.format(data_file_name))
     df=pd.read_csv(data_file_name)
 else:
-    print('cache is not existed try create it by data_craw.py script')
+    print('The cache is not established. Trying to create it from data_craw.py script')
     bl=integration()
     df=pd.DataFrame(bl)
     df.index=df['id']
